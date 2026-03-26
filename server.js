@@ -146,6 +146,35 @@ app.post('/login', async (req, res) => {
     } catch (error) { res.status(500).json({ message: "Server Error" }); }
 });
 
+// ✅ DIRECT SIGNUP ROUTE ADDED HERE
+app.post('/api/register', async (req, res) => {
+    try {
+        const { username, name, email, password, age, phone } = req.body;
+        
+        // 1. Check if user already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) return res.status(400).json({ message: "User already exists" });
+
+        // 2. Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
+        // 3. Save to database
+        const newUser = await User.create({ 
+            username, 
+            name, 
+            email, 
+            password: hashedPassword, 
+            age, 
+            phone 
+        });
+
+        res.status(201).json({ message: "Account created successfully!", user: newUser });
+    } catch (error) { 
+        console.error("Signup Error:", error);
+        res.status(500).json({ message: "Error creating user" }); 
+    }
+});
+
 app.post('/send-otp', async (req, res) => {
     const { email } = req.body;
     try {
