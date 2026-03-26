@@ -93,7 +93,7 @@ app.use(cors({
 }));
 
 // ================= DB CONNECTION =================
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/Aura-chat')
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
   .catch(err => console.log("❌ DB Error:", err));
 
