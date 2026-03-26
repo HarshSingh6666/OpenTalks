@@ -25,10 +25,11 @@ if (!searchUsers) console.error("❌ CRITICAL ERROR: 'searchUsers' Controller im
 // ROUTES
 // ==============================
 
-// Profile Routes
 router.get('/me', verifyToken, getMe);
 router.put('/update', verifyToken, updateProfile);
-router.get('/', verifyToken, searchUsers); 
+
+// ✅ Changed from '/' to '/search' to match your frontend!
+router.get('/search', verifyToken, searchUsers); 
 
 // Avatar Routes
 router.post('/avatar', verifyToken, upload.single('avatar'), uploadAvatar);
