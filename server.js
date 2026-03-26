@@ -92,7 +92,7 @@ const io = new Server(server, {
   pingTimeout: 60000,
   cors: { 
     // Frontend ke saare possible URLs allow karein
-    origin: ["http://localhost:8080", "http://localhost:5173", "http://localhost:3000"],
+    origin: ["http://localhost:8080", "https://open-talks.netlify.app"],
     methods: ["GET", "POST"],
     credentials: true
   },
