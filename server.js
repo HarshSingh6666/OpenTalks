@@ -17,31 +17,6 @@ const User = require("./models/User");
 
 const PORT = process.env.PORT || 5000;
 
-// ================= FIREBASE SETUP (Safe Mode) =================
-// ================= FIREBASE SETUP (Safe Mode & Render Compatible) =================
-// try {
-//     let serviceAccount;
-
-//     // Check karein ki hum Render par hain ya Local
-//     if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-//     console.log("Raw Env Var (First 50 chars):", process.env.FIREBASE_SERVICE_ACCOUNT.substring(0, 50)); // Ye line add karein check karne ke liye
-    
-//     try {
-//         serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-//     } catch (e) {
-//         console.error("JSON Parse Failed:", e.message);
-//     }
-// }
-//     admin.initializeApp({
-//         credential: admin.credential.cert(serviceAccount)
-//     });
-//     console.log("🔥 Firebase Admin Initialized");
-// } catch (error) {
-//     console.log("⚠️ Firebase Config Error: " + error.message);
-//     console.log("⚠️ Notifications won't work until Key is fixed.");
-// }
-// ================= FIREBASE SETUP (Safe Mode & Render Compatible) =================
-// ================= FIREBASE SETUP (Safe Mode & Render Compatible) =================
 // ================= FIREBASE SETUP (Robust Fix) =================
 try {
     let serviceAccount;
@@ -84,6 +59,7 @@ try {
     }
     console.log("⚠️ Notifications won't work until Key is fixed.");
 }
+
 const app = express();
 const server = http.createServer(app);
 
@@ -103,8 +79,15 @@ app.set('io', io);
 
 // ================= MIDDLEWARES =================
 app.use(express.json());
+
+// ✅ YAHAN FIX KIYA HAI: Netlify URL add kar diya gaya hai
 app.use(cors({
-    origin: ["http://localhost:8080", "http://localhost:5173", "http://localhost:3000"], 
+    origin: [
+        "http://localhost:8080", 
+        "http://localhost:5173", 
+        "http://localhost:3000",
+        "https://open-talks.netlify.app" // <-- NETLIFY ORIGIN ADDED
+    ], 
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -144,7 +127,6 @@ app.use("/api/messages", messageRoutes);
 
 
 // ================= AUTH ROUTES (Direct in Server) =================
-// Note: Behtar hoga inhe userController mein shift karein, par yahan bhi chalega
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -229,7 +211,7 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
   }
 });
 
-// ================= 🔥 SOCKET LOGIC (Fixed for Real-Time) =================
+// ================= 🔥 SOCKET LOGIC =================
 let userSocketMap = {}; 
 let liveSessions = {};  
 let disconnectTimers = {};
@@ -247,7 +229,7 @@ io.on("connection", (socket) => {
       console.log(`👤 User Map Updated: ${userId}`);
   }
 
-  // 2. Chat Room Join (The most important part for messaging)
+  // 2. Chat Room Join 
   socket.on("join_channel", (room) => {
       if(!room) return;
       socket.join(room);
